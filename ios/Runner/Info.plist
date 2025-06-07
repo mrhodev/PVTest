@@ -28,6 +28,10 @@
 	<string>LaunchScreen</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Necesitamos acceso a la red local para depuración y herramientas de desarrollo.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>

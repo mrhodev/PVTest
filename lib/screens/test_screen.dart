@@ -6,13 +6,13 @@ import '../models/reaction_event.dart';
 class TestScreen extends StatefulWidget {
   final int durationMinutes;
 
-  const TestScreen({Key? key, required this.durationMinutes}) : super(key: key);
+  const TestScreen({super.key, required this.durationMinutes});
 
   @override
-  _TestScreenState createState() => _TestScreenState();
+  TestScreenState createState() => TestScreenState();
 }
 
-class _TestScreenState extends State<TestScreen> {
+class TestScreenState extends State<TestScreen> {
   final dbHelper = DatabaseHelper();
 
   late final int maxStimuli;
@@ -34,7 +34,7 @@ class _TestScreenState extends State<TestScreen> {
   @override
   void initState() {
     super.initState();
-    maxStimuli = (widget.durationMinutes * 60) ~/ 2; // 1 estímulo cada 2 segundos aprox
+    maxStimuli = ((widget.durationMinutes != 0 ? widget.durationMinutes : 0.5) * 60).toInt() ~/ 2; // 1 estímulo cada 2 segundos aprox
     _startTest();
   }
 
@@ -62,31 +62,48 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void _registerReaction() async {
-    if (!waitingForReaction || _stimulusTimestamp == null) return;
+    if (waitingForReaction && _stimulusTimestamp != null) {
+      // Reacción válida al estímulo
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final reactionTime = now - _stimulusTimestamp!;
 
-    final now = DateTime.now().millisecondsSinceEpoch;
-    final reactionTime = now - _stimulusTimestamp!;
+      final event = ReactionEvent(
+        sessionId: sessionId,
+        timestamp: now,
+        reactionTime: reactionTime,
+        type: reactionTime > lapseThreshold.inMilliseconds ? 'lapse' : 'normal',
+      );
 
-    final event = ReactionEvent(
-      sessionId: sessionId,
-      timestamp: now,
-      reactionTime: reactionTime,
-      type: reactionTime > lapseThreshold.inMilliseconds ? 'lapse' : 'normal',
-    );
+      await dbHelper.insertEvent(event);
 
-    await dbHelper.insertEvent(event);
+      setState(() {
+        waitingForReaction = false;
+        showingStimulus = false;
+        stimuliShown++;
+        _reactionTime = reactionTime;
+      });
 
-    setState(() {
-      waitingForReaction = false;
-      showingStimulus = false;
-      stimuliShown++;
-      _reactionTime = reactionTime;
-    });
+      if (stimuliShown >= maxStimuli) {
+        _endTest();
+      } else {
+        _scheduleNextStimulus();
+      }
+    } else if (!showingStimulus) {
+      // Toque anticipado (antes del estímulo)
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final event = ReactionEvent(
+        sessionId: sessionId,
+        timestamp: now,
+        reactionTime: -1,
+        type: 'anticipado',
+      );
+      await dbHelper.insertEvent(event);
 
-    if (stimuliShown >= maxStimuli) {
-      _endTest();
-    } else {
-      _scheduleNextStimulus();
+      // Cierra el SnackBar anterior antes de mostrar uno nuevo
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('¡No te adelantes! Espera el estímulo.')),
+      );
     }
   }
 
@@ -115,7 +132,7 @@ class _TestScreenState extends State<TestScreen> {
       onTap: _registerReaction,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Test de Vigilancia'),
+          title: const Text('Test de Vigilancia'),
         ),
         body: Center(
           child: Column(
@@ -123,17 +140,17 @@ class _TestScreenState extends State<TestScreen> {
             children: [
               Text(
                 stimulusText,
-                style: TextStyle(fontSize: 80, color: Colors.blueAccent),
+                style: const TextStyle(fontSize: 80, color: Colors.blueAccent),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text(
                 reactionInfo,
-                style: TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 24),
               ),
-              SizedBox(height: 48),
+              const SizedBox(height: 48),
               Text(
                 'Estimulo ${stimuliShown + 1} de $maxStimuli',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: const TextStyle(fontSize: 18, color: Colors.grey),
               ),
             ],
           ),

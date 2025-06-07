@@ -3,11 +3,13 @@ import 'test_screen.dart';
 import 'results_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   int _selectedDuration = 1;
 
   void _startTest() {
@@ -32,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('PVT Test'),
+        title: const Text('PVT Test'),
         centerTitle: true,
       ),
       body: Padding(
@@ -40,11 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Seleccioná la duración del test", style: TextStyle(fontSize: 18)),
-            SizedBox(height: 10),
+            const Text("Seleccioná la duración del test", style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 10),
             DropdownButton<int>(
               value: _selectedDuration,
-              items: [1, 5, 10].map((e) {
+              items: [0, 1, 5, 10].map((e) {
                 return DropdownMenuItem<int>(
                   value: e,
                   child: Text('$e minutos'),
@@ -58,17 +60,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: _startTest,
-              icon: Icon(Icons.play_arrow),
-              label: Text('Iniciar Test'),
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('Iniciar Test'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             OutlinedButton.icon(
               onPressed: _viewResults,
-              icon: Icon(Icons.bar_chart),
-              label: Text('Ver Resultados'),
+              icon: const Icon(Icons.bar_chart),
+              label: const Text('Ver Resultados'),
             ),
           ],
         ),
