@@ -49,6 +49,9 @@ class ResultsScreenState extends State<ResultsScreen> {
     final correctos = events.where((e) => e.type != 'anticipado').length;
     final ratio = correctos > 0 ? anticipados / correctos : 0.0;
 
+    final lapses500 = events.where((e) => e.type != 'anticipado' && e.reactionTime > 500).length;
+    final lapses1000 = events.where((e) => e.type != 'anticipado' && e.reactionTime > 1000).length;
+
     final spots = events
         .where((e) => e.type != 'anticipado')
         .map((e) => FlSpot(
@@ -86,6 +89,15 @@ class ResultsScreenState extends State<ResultsScreen> {
         Text(
           'Ratio anticipados/correctos: ${ratio.toStringAsFixed(2)}',
           style: const TextStyle(fontSize: 16, color: Colors.orange),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '# > 500 ms: $lapses500',
+          style: const TextStyle(fontSize: 16, color: Colors.blue),
+        ),
+        Text(
+          '# > 1000 ms: $lapses1000',
+          style: const TextStyle(fontSize: 16, color: Colors.purple),
         ),
         const SizedBox(height: 16),
         Expanded(

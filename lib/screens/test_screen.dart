@@ -34,7 +34,7 @@ class TestScreenState extends State<TestScreen> {
   @override
   void initState() {
     super.initState();
-    maxStimuli = ((widget.durationMinutes != 0 ? widget.durationMinutes : 0.5) * 60).toInt() ~/ 2; // 1 estímulo cada 2 segundos aprox
+    maxStimuli = ((widget.durationMinutes != 0 ? widget.durationMinutes : 0.25) * 60).toInt() ~/ 2; // 1 estímulo cada 2 segundos aprox
     _startTest();
   }
 
@@ -119,10 +119,6 @@ class TestScreenState extends State<TestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final stimulusText = showingStimulus
-        ? '$currentStimulusNumber'
-        : '...';
-
     final reactionInfo = _reactionTime != null
         ? 'Reacción: $_reactionTime ms'
         : '';
@@ -138,9 +134,24 @@ class TestScreenState extends State<TestScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                stimulusText,
-                style: const TextStyle(fontSize: 80, color: Colors.blueAccent),
+              // Estímulo: círculo rojo grande cuando showingStimulus es true
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: showingStimulus
+                    ? Container(
+                        key: const ValueKey('circle'),
+                        width: 120,
+                        height: 120,
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                      )
+                    : const SizedBox(
+                        key: ValueKey('empty'),
+                        width: 120,
+                        height: 120,
+                      ),
               ),
               const SizedBox(height: 24),
               Text(
