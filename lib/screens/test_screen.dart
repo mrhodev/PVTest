@@ -4,6 +4,10 @@ import '../db/database_helper.dart';
 import '../models/reaction_event.dart';
 
 class TestScreen extends StatefulWidget {
+  final int durationMinutes;
+
+  const TestScreen({Key? key, required this.durationMinutes}) : super(key: key);
+
   @override
   _TestScreenState createState() => _TestScreenState();
 }
@@ -11,7 +15,8 @@ class TestScreen extends StatefulWidget {
 class _TestScreenState extends State<TestScreen> {
   final dbHelper = DatabaseHelper();
 
-  static const int maxStimuli = 10;
+  late final int maxStimuli;
+
   static const Duration minDelay = Duration(seconds: 2);
   static const Duration maxDelay = Duration(seconds: 5);
   static const Duration lapseThreshold = Duration(milliseconds: 500);
@@ -25,6 +30,13 @@ class _TestScreenState extends State<TestScreen> {
   Timer? _stimulusTimer;
   int? _stimulusTimestamp;
   int? _reactionTime;
+
+  @override
+  void initState() {
+    super.initState();
+    maxStimuli = (widget.durationMinutes * 60) ~/ 2; // 1 estímulo cada 2 segundos aprox
+    _startTest();
+  }
 
   void _startTest() {
     _scheduleNextStimulus();
@@ -80,12 +92,6 @@ class _TestScreenState extends State<TestScreen> {
 
   void _endTest() {
     Navigator.of(context).pop();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _startTest();
   }
 
   @override

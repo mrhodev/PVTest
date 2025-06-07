@@ -10,7 +10,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedDuration = 1;
 
-
   void _startTest() {
     Navigator.push(
       context,
@@ -45,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 10),
             DropdownButton<int>(
               value: _selectedDuration,
-              items: [5, 10].map((e) {
+              items: [1, 5, 10].map((e) {
                 return DropdownMenuItem<int>(
                   value: e,
                   child: Text('$e minutos'),
